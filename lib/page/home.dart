@@ -5,6 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:listmaker/providers/provider.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart'; // Necesario para BlocProvider
+import 'package:listmaker/bloc/calculator/calculator_bloc.dart';
+import 'calculator_screen.dart';
+
 class Home extends StatelessWidget {
   const Home({super.key, required this.isDark});
   final ValueNotifier isDark;
@@ -52,13 +56,6 @@ class Home extends StatelessWidget {
             ),
             // backgroundColor: Colors.blue,
             actions: [
-              // IconButton(
-              //   icon: Icon(Icons.menu), // Primer ícono a la derecha
-              //   iconSize: 35.0,
-              //   onPressed: () {
-              //     // Acción para notificaciones
-              //   },
-              // ),
               ValueListenableBuilder<bool>(
                 valueListenable: isDark as ValueNotifier<bool>,
                 builder: (context, isDarkMode, child) {
@@ -91,19 +88,6 @@ class Home extends StatelessWidget {
                   );
                 },
               ),
-
-              // ValueListenableBuilder(
-              //   valueListenable: isDark,
-              //   builder: (context, isDarkMode, child) {
-              //     return Switch.adaptive(
-              //       value: isDarkMode,
-              //       onChanged: (value) {
-              //         isDark.value = value;
-              //         context.read<ThemeProvider>().togleTheme(value);
-              //       },
-              //     );
-              //   },
-              // ),
               IconButton(
                 icon: Icon(
                   Icons.calculate_rounded,
@@ -111,7 +95,7 @@ class Home extends StatelessWidget {
                 iconSize: 35.0,
                 color: Colors.red[900],
                 onPressed: () {
-                  // Acción para notificaciones
+                  calculator(context); // Acción para notificaciones
                 },
               ),
               IconButton(
@@ -196,6 +180,7 @@ class Home extends StatelessWidget {
                   IconButton(
                     icon: Icon(
                       CupertinoIcons.sort_down_circle_fill,
+                      color: Colors.deepPurpleAccent,
                     ), // Ícono de ordenamiento
                     iconSize: MediaQuery.of(context).size.width * 0.1,
                     onPressed: () {
@@ -211,3 +196,95 @@ class Home extends StatelessWidget {
     );
   }
 }
+
+void calculator(BuildContext context) {
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (BuildContext dialogContext) {
+      return AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        content: BlocProvider(
+          create: (context) => CalculatorBloc(),
+          child: Stack(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(dialogContext).size.width * 0.9,
+                height: MediaQuery.of(dialogContext).size.height * 0.75,
+                child: CalculatorScreen(),
+              ),
+              Positioned(
+                right: 0,
+                top: 0,
+                child: IconButton(
+                  icon: Icon(Icons.close, color: Colors.red),
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          // TextButton(
+          //   onPressed: () {
+          //     Navigator.pop(dialogContext); // Usa dialogContext aquí
+          //   },
+          //   child: Text('Cerrar Calculadora'), // Cambiado para más claridad
+          // ),
+        ],
+      );
+    },
+  );
+}
+
+// void calculator(BuildContext context) {
+//   showDialog(
+//     barrierDismissible: false,
+//     context: context,
+//     builder: (BuildContext context) {
+//       return AlertDialog(
+//         contentPadding: EdgeInsets.zero, // Elimina el padding predeterminado
+//         content: Stack(
+//           children: [
+//             Padding(
+//               padding: const EdgeInsets.all(16.0),
+//               child: Column(
+//                 mainAxisSize: MainAxisSize.min,
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   SizedBox(height: 40), // Espacio para el botón de cierre
+//                   Text(
+//                     'Hola',
+//                     // style: Theme.of(context).textTheme.headline6,
+//                   ),
+//                   SizedBox(height: 16),
+//                   Text('¿Qué haces?'),
+//                 ],
+//               ),
+//             ),
+//             Positioned(
+//               right: 8,
+//               top: 8,
+//               child: IconButton(
+//                 icon: Icon(Icons.close, color: Colors.red),
+//                 onPressed: () {
+//                   Navigator.pop(context);
+//                 },
+//               ),
+//             ),
+//           ],
+//         ),
+//         actions: [
+//           TextButton(
+//             onPressed: () {
+//               Navigator.pop(context);
+//             },
+//             child: Text('Salir'),
+//           ),
+//         ],
+//       );
+//     },
+//   );
+// }
